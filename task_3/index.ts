@@ -45,3 +45,23 @@ const BALLONS: { [key: string]: BallonI } = {
 };
 
 // Ваш код здесь
+async function getPublicBallonsTotal() {
+// берём только public шарики
+  const publicBallons = Object.values(BALLONS).filter(b => b.isPublic);
+
+// создаём массив промисов
+  const promises = publicBallons.map(b => fetchBallonAmount(b.id));
+
+// ждём, пока все промисы выполнятся
+  const amounts = await Promise.all(promises);
+
+// суммируем результат
+  const total = amounts.reduce((acc, n) => acc + n, 0);
+
+  console.log("Total public ballons:", total);
+  return total;
+}
+
+// вызов
+getPublicBallonsTotal();
+
