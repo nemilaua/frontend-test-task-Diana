@@ -1,7 +1,9 @@
-import { Fragment, memo } from 'react';
+import { Fragment, memo, useCallback } from 'react';
 
 const MainComponent = () => {
-    const makeLog = () => console.log('hi from MainComponent'); // function to make logs from MainComponent
+    const makeLog = useCallback(() => {
+        console.log('hi from MainComponent');
+    }, []); // пустой массив зависимостей → ссылка стабильна
 
     return (
         <Fragment>
@@ -11,6 +13,6 @@ const MainComponent = () => {
 };
 
 // memoized component
-const ChildComponent = memo(({ makeLog }) => (
+const ChildComponent = memo(({ makeLog }: { makeLog: () => void }) => (
     <button onClick={makeLog}>say Hi from ChildComponent</button>
 ));
