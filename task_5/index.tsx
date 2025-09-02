@@ -1,16 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import useSWR from 'swr';
+import useSWR, { SWRConfig } from 'swr';
 
 import styles from './page.module.css';
-
 import { fetchOnePost } from '@/libs/fetchOnePost';
 
 const ComponentOne = () => {
-    const { data } = useSWR('custom_key_1', fetchOnePost);
-    //...some logic
-
+    const { data } = useSWR('post', fetchOnePost);
     return data ? (
         <div className={styles.card}>
             <h2>{data.title}</h2>
@@ -23,9 +20,7 @@ const ComponentOne = () => {
 };
 
 const ComponentTwo = () => {
-    const { data } = useSWR('custom_key_2', () => fetchOnePost({ delayMS: 2000 }));
-    //...some logic
-
+    const { data } = useSWR('post', fetchOnePost); // берём тот же ключ
     return data ? (
         <div className={styles.card}>
             <h2>{data.title}</h2>
@@ -41,17 +36,29 @@ export default function Home() {
     const [showComponentTwo, setShowComponentTwo] = useState(false);
 
     return (
-        <main className={styles.main}>
-            <div className={styles.description}>
-                <ComponentOne />
-                {showComponentTwo ? (
-                    <ComponentTwo />
-                ) : (
-                    <button className={styles.btn} onClick={() => setShowComponentTwo(true)}>
-                        Show ComponentTwo
-                    </button>
-                )}
-            </div>
-        </main>
+        <SWRConfig
+            value={{
+                fallback: {
+                    // можно подставить мок или реальные данные
+                    post: {
+                        title: 'Заголовок из fallback',
+                        body: 'Текст из fallback',
+                    },
+                },
+            }}
+        >
+            <main className={styles.main}>
+                <div className={styles.description}>
+                    <ComponentOne />
+                    {showComponentTwo ? (
+                        <ComponentTwo />
+                    ) : (
+                        <button className={styles.btn} onClick={() => setShowComponentTwo(true)}>
+                            Show ComponentTwo
+                        </button>
+                    )}
+                </div>
+            </main>
+        </SWRConfig>
     );
 }
